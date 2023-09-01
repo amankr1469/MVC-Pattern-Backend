@@ -24,14 +24,18 @@ const userSchema = new mongoose.Schema({
         minLength: [8, 'Password must be atleast 8 characters long'],
         select: false, //find method wouldn't give us password when called as we don't want to display the password 
     },
+    googleId: {
+        type: String,
+        unique: true,
+    },
     avatar: {
         public_id:{
             type:String,
-            required:true
+            // required:true
         },
         url:{
             type:String,
-            required:true
+            // required:true
         }
     },
     role: {
