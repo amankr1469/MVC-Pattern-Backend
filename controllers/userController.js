@@ -1,5 +1,5 @@
 const User = require('../models/userModel');
-const ErrorHandler = require('../utils/errorHandler');
+const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const crypto = require("crypto");
@@ -70,7 +70,7 @@ exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
 });
 
 //Update user Details
-exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
+exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
     const newUserData = {
       name: req.body.name,
       email: req.body.email,
@@ -89,12 +89,27 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
     });
 });
 
-//Admin Controller
+//Get all users
 exports.getAllUsers = catchAsyncErrors( async (req, res) => {
 
     const allUsers = await User.find();
 
     res.send(success(200, allUsers));  
+});
+
+//Get single user -- Admin
+exports.getSingleUser = catchAsyncErrors (async (req, res, next) => {
+
+  const user = await User.findById(req.params.id);
+
+  if(!user){
+      return next(new ErrorHandler(`User doeas not exist with Id ${req.params.id}`));
+  }
+
+  res.status(200).json({
+      success: true,
+      user,
+  })
 });
 
 //Update user Password
@@ -118,14 +133,21 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
   //Delete User
-exports.deleteUser = async (req, res) => {
-    try {
-      const user = await User.findByIdAndDelete(req.params.id);
-      res.send(success(200, "User Is Delete Succesfully"));
-    } catch (e) {
-      res.send(error(500, e.message));
+  exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
+    
+    const user = await User.findById(req.params.id);
+
+    if(!user) {
+        return next(new ErrorHandler('User not found', 400));
     }
-};
+
+    await user.deleteOne({_id : req.params.id});
+
+    res.status(200).json({
+        success: true,
+        message: 'User deleted successfully',
+    });
+});
   
 // Forgot Password
 exports.forgotPassword = async (req, res) => {
@@ -202,5 +224,27 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
   
     sendToken(user, 200, res);
 });
+
+//Update Role of User
+exports.updateUserRole = catchAsyncErrors(async (req, res, next) => {
+
+  const newUserData = {
+      name: req.body.name,
+      email: req.body.email,
+      role: req.body.role
+  };
+
+  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+      new:true,
+      runValidators: true,
+      useFindAndModify: true
+  });
+
+  res.status(200).json({
+      success: true,
+  })
+});
+
+
   
 

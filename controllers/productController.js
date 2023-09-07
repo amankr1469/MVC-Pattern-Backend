@@ -1,5 +1,5 @@
 const Product = require('../models/productModel');
-const ErrorHandler = require('../utils/errorHandler');
+const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const ApiFeatures = require('../utils/apiFeatures');
 const cloudinary = require("cloudinary");
@@ -50,8 +50,6 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
   
     apiFeature.pagination(resultPerPage);
   
-    products = await apiFeature.query;
-  
     res.send(
         success(200, {
           products,
@@ -70,7 +68,9 @@ exports.getAdminProducts = catchAsyncErrors(async (req, res, next) => {
 
 // Delete Product
 exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
-    const product = await Product.findById(req.params.id);
+    const { id } = req.params;
+ 
+    const product = await Product.findById(id);
   
     if (!product) {
       return next(new ErrorHandler("Product not found", 404));
@@ -81,7 +81,7 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
       await cloudinary.v2.uploader.destroy(product.images[i].public_id);
     }
   
-    await product.remove();
+    await product.deleteOne({ _id: req.params.id });
   
     res.send(success(200, "Product Delete Successfully"));
   });

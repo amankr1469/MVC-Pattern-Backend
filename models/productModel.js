@@ -12,6 +12,11 @@ const productSchema = new mongoose.Schema({
         required:[true,"Please enter product description"]
     },
 
+    longDescription: {
+        type: String,
+        required: [true, "Please enter proper product description"],
+      },
+
     price:{
         type:Number,
         required:[true,"Please enter product price"],
@@ -43,7 +48,12 @@ const productSchema = new mongoose.Schema({
 
     category:{
         type:String,
-        required:[true,"Please enter product category"]
+        required:[true,"Please enter product category"],
+    },
+
+    subCategory:{
+        type:String,
+        required:[true,"Please enter product sub-category"],
     },
 
     colour: {
@@ -52,16 +62,28 @@ const productSchema = new mongoose.Schema({
     },
 
     Stock:{
-        type:Number,
-        required:[true,"Please enter product stock"],
-        maxLength:[4,"Stock can't be more than 4 characters"],
-        default:1
+        small:{
+            type: String,
+            required:[true,"Please enter if small size is available"],
+            default: "In Stock"
+        },
+        medium:{
+            type: String,
+            required:[true,"Please enter if medium size is available"],
+            default: "In Stock"
+        },
+        large:{
+            type: String,
+            required:[true,"Please enter if large size is available"],
+            default: "In Stock"
+        },
     },
     
     numOfReviews:{
         type:Number,
         default:0
     },
+
 
     // reviews:[
     //     {
