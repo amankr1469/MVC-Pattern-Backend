@@ -1,8 +1,8 @@
-const Pincode = require("../models/Pincode");
+const Pincode = require("../models/pincodeModel");
 const { success, error } = require("../utils/responseWrapper");
-const Headers = require("../models/Headers");
-const Coupons = require("../models/Coupons");
-const { sendEmailMessage } = require("../utils/sendMail");
+const Headers = require("../models/headersModel");
+const Coupons = require("../models/couponModel");
+// const { sendEmailMessage } = require("../utils/sendMail");
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 
@@ -68,6 +68,7 @@ exports.deletePincode = catchAsyncErrors(async (req, res, next) => {
     })
 });
 
+//Header Controllers----------------------------------------------------------------
 exports.createAndUpdateHeader = async (req, res) => {
   try {
     const { HeadLine } = req.body;
@@ -98,7 +99,8 @@ exports.getHeaderLine = async (req, res) => {
   }
 };
 
-//Coupon Controller
+//Coupon Controller----------------------------------------------------------------
+//Create a new coupon -
 exports.createCoupon = async (req, res) => {
   try {
     const { couponNumber, discount } = req.body;
@@ -113,7 +115,7 @@ exports.createCoupon = async (req, res) => {
   }
 };
 
-//GEt Coupons Controller
+//Get all Coupons - 
 exports.getAllCoupons = async (req, res) => {
   try {
     const coupons = await Coupons.find();
@@ -124,25 +126,57 @@ exports.getAllCoupons = async (req, res) => {
   }
 };
 
-exports.sendContactInformation = async (req, res) => {
-  try {
-    const { message, name, email } = req.body;
+//Get a single coupon -
+exports.getSingleCoupon = catchAsyncErrors(async (req, res) => {
 
-    try {
-      await sendEmailMessage({
-        email: "agrawalanushka512@gmail.com",
-        subject: `Message from ${name}`,
-        message: `${message}`,
-      });
+    const coupons = await Coupons.find(req.params.id);
 
-      res.status(200).json({
-        success: true,
-        message: `Email sent to ${user.email} successfully`,
-      });
-    } catch (e) {
-      return res.send(error(500, e.message));
+    if(!coupons) {
+        return next(new ErrorHandler(`Coupon doeas not exist with ID ${req.params.id}`));
     }
-  } catch (e) {
-    return res.send(error(5000, e.message));
-  }
-};
+
+    res.status(200).json({
+        success: true,
+        user,
+    })
+});
+
+//Delete a coupon - 
+exports.deleteCoupon = catchAsyncErrors(async (req, res) => {
+
+    const coupon = await Coupon.findById(req.params.id);
+
+    if(!coupon) {
+        return next(new ErrorHandler('Coupon not found', 400));
+    }
+
+    await user.deleteOne({_id : req.params.id});
+
+    res.status(200).json({
+        success: true,
+        message: 'Coupon deleted successfully',
+    });
+}); 
+
+// exports.sendContactInformation = async (req, res) => {
+//   try {
+//     const { message, name, email } = req.body;
+
+//     try {
+//       await sendEmailMessage({
+//         email: "agrawalanushka512@gmail.com",
+//         subject: `Message from ${name}`,
+//         message: `${message}`,
+//       });
+
+//       res.status(200).json({
+//         success: true,
+//         message: `Email sent to ${user.email} successfully`,
+//       });
+//     } catch (e) {
+//       return res.send(error(500, e.message));
+//     }
+//   } catch (e) {
+//     return res.send(error(5000, e.message));
+//   }
+// };

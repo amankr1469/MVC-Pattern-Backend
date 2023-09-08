@@ -8,21 +8,39 @@ const {
     sendContactInformation,
     deletePincode,
     updatePincode,
-  } = require("../controllers/utilsController");
+    deleteCoupon,
+} = require("../controllers/utilsController");
   
-  const router = require("express").Router();
+const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
+
+const router = require("express").Router();
   
-  //Pincode routes--
-  router.route("/util/pincode/create").post(createPincode);
-  router.route("/util/pincodes").get(getAllPincodes);
-  router.route("util/pincode/:id").put(updatePincode).delete(deletePincode);
+//Pincode routes----------------------------------------------------------------
+router.route("/util/pincode/create").post(isAuthenticatedUser, authorizeRoles("admin"), createPincode);
+
+router.route("/util/pincodes").get(isAuthenticatedUser, authorizeRoles("admin"),getAllPincodes);
+
+//Get Single Pincode not required!
+
+router.route("util/pincode/:id").put(isAuthenticatedUser, authorizeRoles("admin"),updatePincode)
+                                  .delete(isAuthenticatedUser, authorizeRoles("admin"),deletePincode);
+
+//Header routes----------------------------------------------------------------
+router.route("/util/header").post(isAuthenticatedUser, authorizeRoles("admin"), createAndUpdateHeader);
+
+router.route("/util/header").get(isAuthenticatedUser, authorizeRoles("admin"), getHeaderLine);
 
 
-  router.route("/util/header").post(createAndUpdateHeader);
-  router.route("/util/header").get(getHeaderLine);
-  router.route("/util/coupon/create").post(createCoupon);
-  router.route("/util/coupons").get(getAllCoupons);
-  router.route("/util/sendMessage").post(sendContactInformation);
+//Coupon routes----------------------------------------------------------------
+router.route("/util/coupon/create").post(isAuthenticatedUser, authorizeRoles("admin"), createCoupon);
+
+router.route("/util/coupons").get(isAuthenticatedUser, authorizeRoles("admin"), getAllCoupons);
+
+router.route("/util/coupon/:id").delete(isAuthenticatedUser, authorizeRoles("admin"), deleteCoupon);
+
+
+
+// router.route("/util/sendMessage").post(sendContactInformation);
   
-  module.exports = router;
+module.exports = router;
   

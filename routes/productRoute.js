@@ -9,11 +9,11 @@ const {
   } = require("../controllers/productController");
   const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
   
-const router = require("express").Router();
+const router = express.Router();
 
 router.route("/products").get(getAllProducts);
 
-router.get("/product/:id", getProductDetails);
+router.route("/product/:id").get(getProductDetails);
 
 router.route("/admin/products").get(isAuthenticatedUser,authorizeRoles("admin") , getAdminProducts);
 
