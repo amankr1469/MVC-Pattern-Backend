@@ -13,12 +13,15 @@ const user = require("./routes/userRoute");
 const order = require("./routes/orderRoute");
 const utils = require("./routes/utilsRoute");
 const blog = require("./routes/blogRoute");
+const category = require("./routes/categoryRoute");
 
 app.use("/api/v1", product);
 app.use("/api/v1", user);
 app.use("/api/v1", order);
 app.use("/api/v1", utils);
+app.use("/api/v1", category);
 app.use("/api/v1", blog);
+
 
 //Middleware for Error
 app.use(errorMiddleware);

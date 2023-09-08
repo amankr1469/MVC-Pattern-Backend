@@ -1,4 +1,4 @@
-const Product = require('../models/productModel');
+const Blog = require('../models/blogModel');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const cloudinary = require("cloudinary");
@@ -28,9 +28,9 @@ exports.createBlog = catchAsyncErrors(async (req, res, next) => {
   
     req.body.images = imagesLinks;
       
-    const product = await Product.create(req.body);
+    const blog = await blog.create(req.body);
   
-    res.send(success(200, product));
+    res.send(success(200, blog));
 });
 
 //Get all Blog - User & Admin 
